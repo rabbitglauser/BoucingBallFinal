@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouncing Words</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #68aeea, #ff6ec4);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .box {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background: rgba(0, 123, 255, 0.8);
+            border: 2px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+            resize: both;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .word {
+            position: absolute;
+            font-size: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="title">Bouncing MEMES</div>
+<div class="box" id="box"></div>
+
+<div class="controls">
+    <button onclick="addWord()">Add Word</button>
+</div>
+
+<div class="title">Attempt Count: <span id="attemptCount">0</span></div>
+
+<footer>
+    <a href="https://www.samuel.com" target="_blank" rel="noopener noreferrer">Visit my website</a>
+    <p>&copy; Samuel</p>
+</footer>
+<script>
+    const box = document.getElementById('box');
+    const words = [];
+    const wordList = ["skibidi toilet", "Distracted Boyfriend", "Drake Hotline Bling", "Expanding Brain", "Two Buttons", "Mocking SpongeBob",
+        "Change My Mind", "Woman Yelling at a Cat", "Is This a Pigeon?", "Success Kid", "Grumpy Cat",
+        "Doge", "9000 Ping", "Surprised Pikachu", "Roll Safe", "One Does Not Simply",
+        "Alex Turlet", "Hide the Pain Harold", "Pepe the Frog", "Arthur's Fist", "Overly Attached Girlfriend",
+        "Philosoraptor", "Futurama Fry", "Y U No", "Ermahgerd", "Condescending Wonka",
+        "Triggered", "Shut Up and Take My Money", "Forever Alone", "Facepalm", "First World Problems",
+        "Me Explaining", "They Don't Know", "Sweating Jordan Peele", "Always Has Been", "What If I Told You",
+        "Crying Jordan", "He Protec But He Attac", "You vs. The Guy She Told You Not to Worry About", "Ain't Nobody Got Time for That", "How Do You Do, Fellow Kids?",
+        "It's Over 9000", "Confused Math Lady", "Weird Flex But OK", "Big Brain Time", "Surprised Pikachu",
+        "Is Mayonnaise an Instrument?", "Ight Imma Head Out", "Am I a Joke to You?", "Disaster Girl", "Epic Fail"
+    ];
+
+    let attemptCount = 0;
+    const attemptCountElement = document.getElementById('attemptCount');
+
+    function getRandomVelocity() {
+        return (Math.random() * 20) + 1;  // Random velocity between 1 and 5
+    }
+
+    function getRandomWord() {
+        return wordList[Math.floor(Math.random() * wordList.length)];
+    }
+
+    function addWord() {
+        const word = document.createElement('div');
+        word.classList.add('word');
+        word.textContent = getRandomWord();
+        box.appendChild(word);
+
+        const wordObj = {
+            element: word,
+            x: Math.random() * (box.clientWidth - 20), // Random position inside box
+            y: Math.random() * (box.clientHeight - 20),
+            vx: getRandomVelocity(),  // Random x velocity
+            vy: getRandomVelocity()   // Random y velocity
+        };
+
+        words.push(wordObj);
+        attemptCount++;
+        attemptCountElement.textContent = attemptCount;
+    }
+
+    function moveWords() {
+        words.forEach(word => {
+            word.x += word.vx;
+            word.y += word.vy;
+
+            // Check for collision with the walls
+            if (word.x <= 0 || word.x >= (box.clientWidth - word.element.clientWidth)) {
+                word.vx *= -1;  // Reverse direction when hitting vertical walls
+            }
+
+            if (word.y <= 0 || word.y >= (box.clientHeight - word.element.clientHeight)) {
+                word.vy *= -1;  // Reverse direction when hitting horizontal walls
+            }
+
+            word.element.style.left = `${word.x}px`;
+            word.element.style.top = `${word.y}px`;
+        });
+    }
+
+    setInterval(moveWords, 20);  // Move words every 20 milliseconds
+</script>
+</body>
+</html>
