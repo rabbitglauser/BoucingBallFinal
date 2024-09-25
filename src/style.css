@@ -6,25 +6,38 @@
 
 body {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #68aeea, #ff6ec4);
+    font-family: 'Arial', sans-serif;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .box {
     position: relative;
     width: 600px;
     height: 400px;
-    background-color: #007bff;
+    background: rgba(0, 123, 255, 0.8);
     border: 2px solid #000;
+    border-radius: 10px;
     overflow: hidden;
+    resize: both;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .word {
     position: absolute;
     font-size: 20px;
     color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .controls {
@@ -40,8 +53,16 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.2s;
+    width: 100%;
 }
 
 button:hover {
     background-color: #218838;
+    transform: scale(1.05);
+}
+
+button:focus {
+    outline: none;
 }
