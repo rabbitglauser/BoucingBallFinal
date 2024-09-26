@@ -5,63 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bouncing Words Christmas</title>
     <link rel="stylesheet" href="style.css">
+    <link href='https://fonts.googleapis.com/css?family=Mountains of Christmas' rel='stylesheet'>
 </head>
 <body>
-<div class="title">Bouncing MEMES</div>
+<div class="title"><b>Bouncing MEMES</b></div>
 <div class="box" id="box"></div>
 
 <div class="controls">
     <button onclick="addWord()">Add Word</button>
 </div>
-<style>
-    body {
-        position: relative;
-    }
-
-    .snowflake {
-        position: absolute;
-        top: -10px;
-        color: white;
-        font-size: 1em;
-        z-index: 9999;
-        user-select: none;
-        pointer-events: none;
-    }
-
-    @keyframes fall {
-        0% {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(100vh);
-            opacity: 0.5;
-        }
-    }
-</style>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const numberOfSnowflakes = 100;
-        const snowflakes = [];
-        const body = document.body;
-
-        for (let i = 0; i < numberOfSnowflakes; i++) {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.textContent = '❄';
-            snowflake.style.left = `${Math.random() * window.innerWidth}px`;
-            snowflake.style.animation = `fall ${5 + Math.random() * 5}s linear infinite`;
-            snowflake.style.opacity = `${Math.random()}`;
-            snowflake.style.fontSize = `${10 + Math.random() * 20}px`;
-            snowflake.style.animationDelay = `${Math.random() * 5}s`;
-
-            body.appendChild(snowflake);
-            snowflakes.push(snowflake);
-        }
-    });
-</script>
-
 <div class="title">Attempt Count: <span id="attemptCount">0</span></div>
 
 <footer>
@@ -218,6 +170,27 @@
     }
 
     setInterval(moveWords, 20);  // Move words every 20 milliseconds
+
+    // snow falling script
+    document.addEventListener("DOMContentLoaded", () => {
+        const numberOfSnowflakes = 100;
+        const snowflakes = [];
+        const body = document.body;
+
+        for (let i = 0; i < numberOfSnowflakes; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.textContent = '❄';
+            snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+            snowflake.style.animation = `fall ${5 + Math.random() * 5}s linear infinite`;
+            snowflake.style.opacity = `${Math.random()}`;
+            snowflake.style.fontSize = `${10 + Math.random() * 20}px`;
+            snowflake.style.animationDelay = `${Math.random() * 5}s`;
+
+            body.appendChild(snowflake);
+            snowflakes.push(snowflake);
+        }
+    });
 </script>
 </body>
 </html>
