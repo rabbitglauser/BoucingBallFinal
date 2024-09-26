@@ -12,7 +12,7 @@
 <div class="box" id="box"></div>
 
 <div class="controls">
-    <button onclick="addWord()">Add Word</button>
+    <button onclick="bouncingWordsApp.addWord()">Add Word</button>
 </div>
 <div class="title">Attempt Count: <span id="attemptCount">0</span></div>
 
@@ -21,359 +21,325 @@
     <p>&copy; Samuel</p>
 </footer>
 <script>
-    const box = document.getElementById('box');
-    const words = [];
-    const wordList = ["skibidi toilet", "Distracted Boyfriend", "Drake Hotline Bling", "Expanding Brain", "Two Buttons", "Mocking SpongeBob",
-        "Change My Mind", "Woman Yelling at a Cat", "Is This a Pigeon?", "Success Kid", "Grumpy Cat",
-        "Doge", "9000 Ping", "Surprised Pikachu", "Roll Safe", "One Does Not Simply",
-        "Alex Turlet", "Hide the Pain Harold", "Pepe the Frog", "Arthur's Fist", "Overly Attached Girlfriend",
-        "Philosoraptor", "Futurama Fry", "Y U No", "Ermahgerd", "Condescending Wonka",
-        "Triggered", "Shut Up and Take My Money", "Forever Alone", "Facepalm", "First World Problems",
-        "Me Explaining", "They Don't Know", "Sweating Jordan Peele", "Always Has Been", "What If I Told You",
-        "Crying Jordan", "He Protec But He Attac", "You vs. The Guy She Told You Not to Worry About", "Ain't Nobody Got Time for That", "How Do You Do, Fellow Kids?",
-        "It's Over 9000", "Confused Math Lady", "Weird Flex But OK", "Big Brain Time", "Surprised Pikachu",
-        "Is Mayonnaise an Instrument?", "Ight Imma Head Out", "Am I a Joke to You?", "Disaster Girl", "Epic Fail",
-    ];
+    class BouncingWordsApp {
+        constructor() {
+            this.box = document.getElementById('box');
+            this.words = [];
+            this.wordList = ["skibidi toilet", "Distracted Boyfriend", "Drake Hotline Bling", "Expanding Brain", "Two Buttons", "Mocking SpongeBob",
+                "Change My Mind", "Woman Yelling at a Cat", "Is This a Pigeon?", "Success Kid", "Grumpy Cat",
+                "Doge", "9000 Ping", "Surprised Pikachu", "Roll Safe", "One Does Not Simply",
+                "Alex Turlet", "Hide the Pain Harold", "Pepe the Frog", "Arthur's Fist", "Overly Attached Girlfriend",
+                "Philosoraptor", "Futurama Fry", "Y U No", "Ermahgerd", "Condescending Wonka",
+                "Triggered", "Shut Up and Take My Money", "Forever Alone", "Facepalm", "First World Problems",
+                "Me Explaining", "They Don't Know", "Sweating Jordan Peele", "Always Has Been", "What If I Told You",
+                "Crying Jordan", "He Protec But He Attac", "You vs. The Guy She Told You Not to Worry About", "Ain't Nobody Got Time for That", "How Do You Do, Fellow Kids?",
+                "It's Over 9000", "Confused Math Lady", "Weird Flex But OK", "Big Brain Time", "Surprised Pikachu",
+                "Is Mayonnaise an Instrument?", "Ight Imma Head Out", "Am I a Joke to You?", "Disaster Girl", "Epic Fail",
+            ];
+            this.attemptCount = 0;
+            this.attemptCountElement = document.getElementById('attemptCount');
+            this.activeFireworks = 0;
 
-    let attemptCount = 0;
-    const attemptCountElement = document.getElementById('attemptCount');
+            this.box.addEventListener('click', (event) => this.handleBoxClick(event));
+            setInterval(() => this.moveWords(), 20);  // Move words every 20 milliseconds
 
-    function getRandomVelocity() {
-        return (Math.random() * 1) + 1;  // Lower speed for smoother movement
-    }
-
-    function getRandomWord() {
-        return wordList[Math.floor(Math.random() * wordList.length)];
-    }
-
-    function addWord() {
-        const word = document.createElement('div');
-        word.classList.add('word');
-        word.textContent = getRandomWord();
-        word.style.position = 'absolute';
-
-        let maxAttempts = 100;
-        let attempts = 0;
-        let success = false;
-
-        // Try to place the word in a non-overlapping position
-        while (!success && attempts < maxAttempts) {
-            word.style.left = `${10 + Math.random() * (box.clientWidth - word.clientWidth - 20)}px`;
-            word.style.top = `${10 + Math.random() * (box.clientHeight - word.clientHeight - 20)}px`;
-
-            if (!isOverlapping(word)) {
-                success = true;
-                box.appendChild(word);
-
-                const wordObj = {
-                    element: word,
-                    x: parseFloat(word.style.left),
-                    y: parseFloat(word.style.top),
-                    vx: getRandomVelocity(),  // Random x velocity
-                    vy: getRandomVelocity()   // Random y velocity
-                };
-
-                words.push(wordObj);
-                attemptCount++;
-                attemptCountElement.textContent = attemptCount;
-            }
-
-            attempts++;
+            document.addEventListener("DOMContentLoaded", () => this.createSnowflakes());
         }
 
-        if (!success) {
-            console.warn('Could not find a non-overlapping position for the word after multiple attempts.');
+        getRandomVelocity() {
+            return (Math.random() * 1) + 1;  // Lower speed for smoother movement
         }
-    }
 
-    function isOverlapping(word) {
-        for (let i = 0; i < words.length; i++) {
-            if (checkCollision({element: word}, words[i])) {
-                return true;
+        getRandomWord() {
+            return this.wordList[Math.floor(Math.random() * this.wordList.length)];
+        }
+
+        addWord() {
+            const word = document.createElement('div');
+            word.classList.add('word');
+            word.textContent = this.getRandomWord();
+            word.style.position = 'absolute';
+
+            let maxAttempts = 100;
+            let attempts = 0;
+            let success = false;
+
+            // Try to place the word in a non-overlapping position
+            while (!success && attempts < maxAttempts) {
+                word.style.left = `${10 + Math.random() * (this.box.clientWidth - word.clientWidth - 20)}px`;
+                word.style.top = `${10 + Math.random() * (this.box.clientHeight - word.clientHeight - 20)}px`;
+
+                if (!this.isOverlapping(word)) {
+                    success = true;
+                    this.box.appendChild(word);
+
+                    const wordObj = {
+                        element: word,
+                        x: parseFloat(word.style.left),
+                        y: parseFloat(word.style.top),
+                        vx: this.getRandomVelocity(),  // Random x velocity
+                        vy: this.getRandomVelocity()   // Random y velocity
+                    };
+
+                    this.words.push(wordObj);
+                    this.attemptCount++;
+                    this.attemptCountElement.textContent = this.attemptCount;
+                }
+
+                attempts++;
+            }
+
+            if (!success) {
+                console.warn('Could not find a non-overlapping position for the word after multiple attempts.');
             }
         }
-        return false;
-    }
 
-    function moveWords() {
-        for (let i = 0; i < words.length; i++) {
-            const word = words[i];
-            word.x += word.vx;
-            word.y += word.vy;
-
-            // Check for collision with the walls, including buffer
-            if (word.x <= 0) {
-                word.x = 1;  // Move slightly inside the box
-                word.vx *= -1;  // Reverse direction
-            } else if (word.x >= (box.clientWidth - word.element.clientWidth)) {
-                word.x = box.clientWidth - word.element.clientWidth - 1;
-                word.vx *= -1;
-            }
-
-            if (word.y <= 0) {
-                word.y = 1;
-                word.vy *= -1;
-            } else if (word.y >= (box.clientHeight - word.element.clientHeight)) {
-                word.y = box.clientHeight - word.element.clientHeight - 1;
-                word.vy *= -1;
-            }
-
-            word.element.style.left = `${word.x}px`;
-            word.element.style.top = `${word.y}px`;
-
-            // Check for collision with other words
-            for (let j = i + 1; j < words.length; j++) {
-                const otherWord = words[j];
-                if (checkCollision(word, otherWord)) {
-                    handleCollision(word, otherWord);
+        isOverlapping(word) {
+            for (let i = 0; i < this.words.length; i++) {
+                if (this.checkCollision({element: word}, this.words[i])) {
+                    return true;
                 }
             }
-        }
-    }
-
-    function checkCollision(word1, word2) {
-        const rect1 = word1.element.getBoundingClientRect();
-        const rect2 = word2.element.getBoundingClientRect();
-
-        return !(rect1.right < rect2.left || rect1.left > rect2.right ||
-            rect1.bottom < rect2.top || rect1.top > rect2.bottom);
-    }
-
-    function handleCollision(word1, word2) {
-        // Exchange velocities but also ensure they don't stick
-        let tempVx = word1.vx;
-        let tempVy = word1.vy;
-
-        word1.vx = word2.vx;
-        word1.vy = word2.vy;
-        word2.vx = tempVx;
-        word2.vy = tempVy;
-
-        // Move words apart to prevent overlap
-        const overlapX = (word1.element.offsetWidth + word2.element.offsetWidth) / 2 - Math.abs(word1.x - word2.x);
-        const overlapY = (word1.element.offsetHeight + word2.element.offsetHeight) / 2 - Math.abs(word1.y - word2.y);
-
-        if (overlapX > 0) {
-            word1.x += overlapX / 2;
-            word2.x -= overlapX / 2;
+            return false;
         }
 
-        if (overlapY > 0) {
-            word1.y += overlapY / 2;
-            word2.y -= overlapY / 2;
-        }
+        moveWords() {
+            for (let i = 0; i < this.words.length; i++) {
+                const word = this.words[i];
+                word.x += word.vx;
+                word.y += word.vy;
 
-        word1.element.style.left = `${word1.x}px`;
-        word1.element.style.top = `${word1.y}px`;
-        word2.element.style.left = `${word2.x}px`;
-        word2.element.style.top = `${word2.y}px`;
-    }
-
-    setInterval(moveWords, 20);  // Move words every 20 milliseconds
-
-    // snow falling script
-    document.addEventListener("DOMContentLoaded", () => {
-        const numberOfSnowflakes = 100;
-        const snowflakes = [];
-        const body = document.body;
-
-        for (let i = 0; i < numberOfSnowflakes; i++) {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.textContent = '❄';
-            snowflake.style.left = `${Math.random() * window.innerWidth}px`;
-            snowflake.style.animation = `fall ${5 + Math.random() * 5}s linear infinite`;
-            snowflake.style.opacity = `${Math.random()}`;
-            snowflake.style.fontSize = `${10 + Math.random() * 20}px`;
-            snowflake.style.animationDelay = `${Math.random() * 5}s`;
-
-            body.appendChild(snowflake);
-            snowflakes.push(snowflake);
-        }
-    });
-
-    // Function to create explosion effect
-    function createExplosion(x, y, depth = 0) {
-        const explosion = document.createElement('div');
-        explosion.classList.add('explosion');
-        explosion.style.left = `${x - 50}px`;  // Center the explosion around the clicked point
-        explosion.style.top = `${y - 50}px`;
-        document.body.appendChild(explosion);
-
-        // Remove explosion element after animation ends
-        setTimeout(() => {
-            explosion.remove();
-        }, 1000);  // Match the duration of the animation
-
-        if (depth < 2) {
-            setTimeout(() => {
-                for (let i = 0; i < 4; i++) {
-                    createExplosion(x + (Math.random() * 100 - 50), y + (Math.random() * 100 - 50), depth + 1);
+                // Check for collision with the walls, including buffer
+                if (word.x <= 0) {
+                    word.x = 1;  // Move slightly inside the box
+                    word.vx *= -1;  // Reverse direction
+                } else if (word.x >= (this.box.clientWidth - word.element.clientWidth)) {
+                    word.x = this.box.clientWidth - word.element.clientWidth - 1;
+                    word.vx *= -1;
                 }
-            }, 500);  // Delay slightly for visual effect
-        } else {
-            createFireworkAnimation(x, y, depth + 1);
-        }
-    }
 
-    // New function to handle word explosion chain effect
-    function handleWordExplosionChain(wordElement, chainDepth = 0) {
-        if (chainDepth < 2) {
-            const wordIndex = words.findIndex(word => word.element === wordElement);
-            if (wordIndex !== -1) {
-                const word = words[wordIndex];
-                createExplosion(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
-                createFireworkAnimation(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
-                words.splice(wordIndex, 1);
-                word.element.remove();
+                if (word.y <= 0) {
+                    word.y = 1;
+                    word.vy *= -1;
+                } else if (word.y >= (this.box.clientHeight - word.element.clientHeight)) {
+                    word.y = this.box.clientHeight - word.element.clientHeight - 1;
+                    word.vy *= -1;
+                }
 
-                setTimeout(() => {
-                    // Explode another word randomly
-                    if (words.length > 0) {
-                        const nextWordElement = words[Math.floor(Math.random() * words.length)].element;
-                        handleWordExplosionChain(nextWordElement, chainDepth + 1);
+                word.element.style.left = `${word.x}px`;
+                word.element.style.top = `${word.y}px`;
+
+                // Check for collision with other words
+                for (let j = i + 1; j < this.words.length; j++) {
+                    const otherWord = this.words[j];
+                    if (this.checkCollision(word, otherWord)) {
+                        this.handleCollision(word, otherWord);
                     }
-                }, 500);
+                }
             }
         }
-    }
 
+        checkCollision(word1, word2) {
+            const rect1 = word1.element.getBoundingClientRect();
+            const rect2 = word2.element.getBoundingClientRect();
 
-    box.addEventListener('click', function (event) {
-        if (event.target.classList.contains('word')) {
-            handleWordExplosionChain(event.target);
-            const clickX = event.clientX;
-            const clickY = event.clientY;
-            let activeFireworks = 0;
+            return !(rect1.right < rect2.left || rect1.left > rect2.right ||
+                rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+        }
 
-            console.time("test process")
-            function limitedFireworkAnimation(x, y) {
-                if (activeFireworks < 2) {
-                    createFireworkAnimation(x, y);
-                    activeFireworks++;
+        handleCollision(word1, word2) {
+            // Exchange velocities but also ensure they don't stick
+            let tempVx = word1.vx;
+            let tempVy = word1.vy;
+
+            word1.vx = word2.vx;
+            word1.vy = word2.vy;
+            word2.vx = tempVx;
+            word2.vy = tempVy;
+
+            // Move words apart to prevent overlap
+            const overlapX = (word1.element.offsetWidth + word2.element.offsetWidth) / 2 - Math.abs(word1.x - word2.x);
+            const overlapY = (word1.element.offsetHeight + word2.element.offsetHeight) / 2 - Math.abs(word1.y - word2.y);
+
+            if (overlapX > 0) {
+                word1.x += overlapX / 2;
+                word2.x -= overlapX / 2;
+            }
+
+            if (overlapY > 0) {
+                word1.y += overlapY / 2;
+                word2.y -= overlapY / 2;
+            }
+
+            word1.element.style.left = `${word1.x}px`;
+            word1.element.style.top = `${word1.y}px`;
+            word2.element.style.left = `${word2.x}px`;
+            word2.element.style.top = `${word2.y}px`;
+        }
+
+        createSnowflakes() {
+            const numberOfSnowflakes = 100;
+            const snowflakes = [];
+            const body = document.body;
+
+            for (let i = 0; i < numberOfSnowflakes; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.textContent = '❄';
+                snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+                snowflake.style.animation = `fall ${5 + Math.random() * 5}s linear infinite`;
+                snowflake.style.opacity = `${Math.random()}`;
+                snowflake.style.fontSize = `${10 + Math.random() * 20}px`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+
+                body.appendChild(snowflake);
+                snowflakes.push(snowflake);
+            }
+        }
+
+        createExplosion(x, y, depth = 0) {
+            const explosion = document.createElement('div');
+            explosion.classList.add('explosion');
+            explosion.style.left = `${x - 50}px`;  // Center the explosion around the clicked point
+            explosion.style.top = `${y - 50}px`;
+            document.body.appendChild(explosion);
+
+            // Remove explosion element after animation ends
+            setTimeout(() => {
+                explosion.remove();
+            }, 1000);  // Match the duration of the animation
+
+            if (depth < 2) {
+                setTimeout(() => {
+                    for (let i = 0; i < 4; i++) {
+                        this.createExplosion(x + (Math.random() * 100 - 50), y + (Math.random() * 100 - 50), depth + 1);
+                    }
+                }, 500);  // Delay slightly for visual effect
+            } else {
+                this.createFireworkAnimation(x, y, depth + 1);
+            }
+        }
+
+        handleWordExplosionChain(wordElement, chainDepth = 0) {
+            if (chainDepth < 2) {
+                const wordIndex = this.words.findIndex(word => word.element === wordElement);
+                if (wordIndex !== -1) {
+                    const word = this.words[wordIndex];
+                    this.createExplosion(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
+                    this.createFireworkAnimation(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
+                    this.words.splice(wordIndex, 1);
+                    word.element.remove();
 
                     setTimeout(() => {
-                        activeFireworks--;
-                    }, 6000);
+                        // Explode another word randomly
+                        if (this.words.length > 0) {
+                            const nextWordElement = this.words[Math.floor(Math.random() * this.words.length)].element;
+                            this.handleWordExplosionChain(nextWordElement, chainDepth + 1);
+                        }
+                    }, 500);
                 }
             }
-            console.timeEnd("Test process")
-
-            limitedFireworkAnimation(clickX, clickY);
-
-            // Remove all words after the first explosion
-            setTimeout(() => {
-                words.forEach(wordObj => wordObj.element.remove());
-                words.length = 0;
-            }, 1000);  // Delay to allow chain effect to complete
         }
-    });
 
-        function createExplosion(x, y, depth = 0) {
-        const explosion = document.createElement('div');
-        explosion.classList.add('explosion');
-        explosion.style.left = `${x - 50}px`;  // Center the explosion around the clicked point
-        explosion.style.top = `${y - 50}px`;
-        document.body.appendChild(explosion);
+        handleBoxClick(event) {
+            if (event.target.classList.contains('word')) {
+                this.handleWordExplosionChain(event.target);
+                const clickX = event.clientX;
+                const clickY = event.clientY;
 
-        // Remove explosion element after animation ends
-        setTimeout(() => {
-        explosion.remove();
-    }, 1000);  // Match the duration of the animation
+                console.time("test process")
 
-        if (depth < 2) {
-        setTimeout(() => {
-        for (let i = 0; i < 4; i++) {
-        createExplosion(x + (Math.random() * 100 - 50), y + (Math.random() * 100 - 50), depth + 1);
+                const limitedFireworkAnimation = (x, y) => {
+                    if (this.activeFireworks < 2) {
+                        this.createFireworkAnimation(x, y);
+                        this.activeFireworks++;
+
+                        setTimeout(() => {
+                            this.activeFireworks--;
+                        }, 6000);
+                    }
+                }
+
+                console.timeEnd("Test process")
+
+                limitedFireworkAnimation(clickX, clickY);
+
+                // Remove all words after the first explosion
+                setTimeout(() => {
+                    this.words.forEach(wordObj => wordObj.element.remove());
+                    this.words.length = 0;
+                }, 1000);  // Delay to allow chain effect to complete
+            }
+        }
+
+        createFireworkAnimation(x, y, depth = 0) {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            canvas.style.position = 'absolute';
+            canvas.style.left = '0';
+            canvas.style.top = '0';
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+
+            const particles = [];
+            const numParticles = 100;
+
+            for (let i = 0; i < numParticles; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.random() * 4 - 2,
+                    vy: Math.random() * 4 - 2,
+                    alpha: 1
+                });
+            }
+
+            const drawParticles = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const newParticles = [];
+                const randomIndex = Math.floor(Math.random() * particles.length); // Randomly select one particle
+
+                for (let i = 0; i < particles.length; i++) {
+                    const particle = particles[i];
+                    if (particle.alpha <= 0) {
+                        // Trigger secondary explosions if depth is less than 1
+                        if (depth < 1 && i === randomIndex) { // Create explosion from the randomly selected particle
+                            this.createExplosion(particle.x, particle.y, depth + 1);
+                        }
+                        continue;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
+                    ctx.fill();
+
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.alpha -= 0.01;
+
+                    newParticles.push(particle);
+                }
+
+                particles.length = 0;
+                particles.push(...newParticles);
+                requestAnimationFrame(drawParticles);
+            }
+
+            drawParticles();
+
+            setTimeout(() => {
+                canvas.remove();
+                // Create another firework in the same place after the current one is cleaned up
+                if (depth < 1) {
+                    this.createFireworkAnimation(x, y, depth + 1);
+                }
+            }, 2000);  // Remove canvas after 2 seconds
+        }
     }
-    }, 500);  // Delay slightly for visual effect
-    }
-    }
 
-        function createFireworkAnimation(x, y, depth = 0) {
-        const canvas = document.createElement('canvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        canvas.style.position = 'absolute';
-        canvas.style.left = '0';
-        canvas.style.top = '0';
-        document.body.appendChild(canvas);
-        const ctx = canvas.getContext('2d');
-
-        const particles = [];
-        const numParticles = 100;
-
-        for (let i = 0; i < numParticles; i++) {
-        particles.push({
-        x: x,
-        y: y,
-        vx: Math.random() * 4 - 2,
-        vy: Math.random() * 4 - 2,
-        alpha: 1
-    });
-    }
-
-        function drawParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const newParticles = [];
-        for (let i = 0; i < particles.length; i++) {
-        const particle = particles[i];
-        if (particle.alpha <= 0) {
-        // Trigger secondary explosions if depth is less than 1
-        if (depth < 1) {
-        createExplosion(particle.x, particle.y, depth + 1);
-    }
-        continue;
-    }
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
-        ctx.fill();
-
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.alpha -= 0.01;
-
-        newParticles.push(particle);
-    }
-
-        particles.length = 0;
-        particles.push(...newParticles);
-        requestAnimationFrame(drawParticles);
-    }
-
-        drawParticles();
-
-        setTimeout(() => {
-        canvas.remove();
-        // Create another firework in the same place after the current one is cleaned up
-        if (depth < 1) {
-        createFireworkAnimation(x, y, depth + 1);
-    }
-    }, 2000);  // Remove canvas after 2 seconds
-    }
-
-        // Updated event listener for word clicks
-        box.addEventListener('click', function (event) {
-        if (event.target.classList.contains('word')) {
-        const wordIndex = words.findIndex(word => word.element === event.target);
-        if (wordIndex !== -1) {
-        const word = words[wordIndex];
-        const centerX = word.x + word.element.clientWidth / 2;
-        const centerY = word.y + word.element.clientHeight / 2;
-
-        // Trigger initial explosion and firework animation
-        createExplosion(centerX, centerY, 0);
-        createFireworkAnimation(centerX, centerY, 0);
-
-        // Remove all words after the first explosion
-        words.forEach(wordObj => wordObj.element.remove());
-        words.length = 0;
-    }
-    }
-    });
-</script>
+    const bouncingWordsApp = new BouncingWordsApp();
 </script>
 </body>
 </html>
