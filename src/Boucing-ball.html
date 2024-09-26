@@ -17,6 +17,7 @@
 <div class="title">Attempt Count: <span id="attemptCount">0</span></div>
 
 <footer>
+
     <a href="https://github.com/rabbitglauser" target="_blank" rel="noopener noreferrer"><b>check my code out!</b></a>
     <p>&copy; Samuel</p>
 </footer>
@@ -193,7 +194,7 @@
     });
 
     // Function to create explosion effect
-    function createExplosion(x, y) {
+    function createExplosion(x, y, depth = 0) {
         const explosion = document.createElement('div');
         explosion.classList.add('explosion');
         explosion.style.left = `${x - 50}px`;  // Center the explosion around the clicked point
@@ -204,6 +205,111 @@
         setTimeout(() => {
             explosion.remove();
         }, 1000);  // Match the duration of the animation
+
+        if (depth < 2) {
+            setTimeout(() => {
+                for (let i = 0; i < 4; i++) {
+                    createExplosion(x + (Math.random() * 100 - 50), y + (Math.random() * 100 - 50), depth + 1);
+                }
+            }, 500);  // Delay slightly for visual effect
+        } else {
+            createFireworkAnimation(x, y, depth + 1);
+        }
+    }
+
+    // New function to handle word explosion chain effect
+    function handleWordExplosionChain(wordElement, chainDepth = 0) {
+        if (chainDepth < 2) {
+            const wordIndex = words.findIndex(word => word.element === wordElement);
+            if (wordIndex !== -1) {
+                const word = words[wordIndex];
+                createExplosion(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
+                createFireworkAnimation(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
+                words.splice(wordIndex, 1);
+                word.element.remove();
+
+                setTimeout(() => {
+                    // Explode another word randomly
+                    if (words.length > 0) {
+                        const nextWordElement = words[Math.floor(Math.random() * words.length)].element;
+                        handleWordExplosionChain(nextWordElement, chainDepth + 1);
+                    }
+                }, 500);
+            }
+        }
+    }
+
+    // Updated event listener for word clicks
+    box.addEventListener('click', function (event) {
+        if (event.target.classList.contains('word')) {
+            handleWordExplosionChain(event.target);
+
+            // Remove all words after the first explosion
+            setTimeout(() => {
+                words.forEach(wordObj => wordObj.element.remove());
+                words.length = 0;
+            }, 1000);  // Delay to allow chain effect to complete
+        }
+    });
+
+    function createFireworkAnimation(x, y, depth = 0) {
+        const canvas = document.createElement('canvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.position = 'absolute';
+        canvas.style.left = '0';
+        canvas.style.top = '0';
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        const particles = [];
+        const numParticles = 100;
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                vx: Math.random() * 4 - 2,
+                vy: Math.random() * 4 - 2,
+                alpha: 1
+            });
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const newParticles = [];
+            for (let i = 0; i < particles.length; i++) {
+                const particle = particles[i];
+                if (particle.alpha <= 0) {
+                    // Trigger secondary explosions
+                    if (depth < 1) {
+                        createExplosion(particle.x, particle.y, depth + 1);
+                    }
+                    continue;
+                }
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
+                ctx.fill();
+
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.alpha -= 0.01;
+
+                newParticles.push(particle);
+            }
+
+            particles.length = 0;
+            particles.push(...newParticles);
+            requestAnimationFrame(drawParticles);
+        }
+
+        drawParticles();
+
+        setTimeout(() => {
+            canvas.remove();
+        }, 2000);  // Remove canvas after 2 seconds
     }
 
     function createFireworkAnimation(x, y) {
