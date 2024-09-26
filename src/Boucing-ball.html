@@ -192,9 +192,8 @@
         }
     });
 
-
-        // Function to create explosion effect
-        function createExplosion(x, y) {
+    // Function to create explosion effect
+    function createExplosion(x, y) {
         const explosion = document.createElement('div');
         explosion.classList.add('explosion');
         explosion.style.left = `${x - 50}px`;  // Center the explosion around the clicked point
@@ -203,26 +202,73 @@
 
         // Remove explosion element after animation ends
         setTimeout(() => {
-        explosion.remove();
-    }, 1000);  // Match the duration of the animation
+            explosion.remove();
+        }, 1000);  // Match the duration of the animation
     }
 
-        // Event listener for word clicks
-        box.addEventListener('click', function (event) {
+    function createFireworkAnimation(x, y) {
+        const canvas = document.createElement('canvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.position = 'absolute';
+        canvas.style.left = '0';
+        canvas.style.top = '0';
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        const particles = [];
+        const numParticles = 100;
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                vx: Math.random() * 4 - 2,
+                vy: Math.random() * 4 - 2,
+                alpha: 1
+            });
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                const particle = particles[i];
+                if (particle.alpha <= 0) continue;
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
+                ctx.fill();
+
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.alpha -= 0.01;
+            }
+
+            requestAnimationFrame(drawParticles);
+        }
+
+        drawParticles();
+
+        setTimeout(() => {
+            canvas.remove();
+        }, 2000);  // Remove canvas after 2 seconds
+    }
+
+    // Event listener for word clicks
+    box.addEventListener('click', function (event) {
         if (event.target.classList.contains('word')) {
-        const wordIndex = words.findIndex(word => word.element === event.target);
-        if (wordIndex !== -1) {
-        const word = words[wordIndex];
-        createExplosion(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
-        words.splice(wordIndex, 1);  // Remove the word from the array
-        word.element.remove();  // Remove the word element from the DOM
-    }
-    }
-    });
+            const wordIndex = words.findIndex(word => word.element === event.target);
+            if (wordIndex !== -1) {
+                const word = words[wordIndex];
+                createExplosion(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
+                createFireworkAnimation(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
 
-        // CSS for explosion effect
-        const style = document.createElement('style');
-        style.innerHTML = document.head.appendChild(style);
+                words.forEach(wordObj => wordObj.element.remove());
+                words.length = 0;
+            }
+        }
+    });
 </script>
 </body>
 </html>
