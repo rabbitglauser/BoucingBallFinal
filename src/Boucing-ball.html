@@ -8,7 +8,7 @@
     <link href='https://fonts.googleapis.com/css?family=Mountains of Christmas' rel='stylesheet'>
 </head>
 <body>
-<div class="title"><b>Bouncing MEMES</b></div>
+<div class="title"><b>Christmas Bouncing MEMES </b></div>
 <div class="box" id="box"></div>
 
 <div class="controls">
@@ -39,7 +39,7 @@
     const attemptCountElement = document.getElementById('attemptCount');
 
     function getRandomVelocity() {
-        return (Math.random() * 3) + 1;  // Lower speed for smoother movement
+        return (Math.random() * 1) + 1;  // Lower speed for smoother movement
     }
 
     function getRandomWord() {
@@ -191,6 +191,38 @@
             snowflakes.push(snowflake);
         }
     });
+
+
+        // Function to create explosion effect
+        function createExplosion(x, y) {
+        const explosion = document.createElement('div');
+        explosion.classList.add('explosion');
+        explosion.style.left = `${x - 50}px`;  // Center the explosion around the clicked point
+        explosion.style.top = `${y - 50}px`;
+        document.body.appendChild(explosion);
+
+        // Remove explosion element after animation ends
+        setTimeout(() => {
+        explosion.remove();
+    }, 1000);  // Match the duration of the animation
+    }
+
+        // Event listener for word clicks
+        box.addEventListener('click', function (event) {
+        if (event.target.classList.contains('word')) {
+        const wordIndex = words.findIndex(word => word.element === event.target);
+        if (wordIndex !== -1) {
+        const word = words[wordIndex];
+        createExplosion(word.x + word.element.clientWidth / 2, word.y + word.element.clientHeight / 2);
+        words.splice(wordIndex, 1);  // Remove the word from the array
+        word.element.remove();  // Remove the word element from the DOM
+    }
+    }
+    });
+
+        // CSS for explosion effect
+        const style = document.createElement('style');
+        style.innerHTML = document.head.appendChild(style);
 </script>
 </body>
 </html>
