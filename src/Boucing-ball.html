@@ -197,6 +197,49 @@
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         createExplosion(x, y, depth = 0) {
             const explosion = document.createElement('div');
             explosion.classList.add('explosion');
@@ -207,14 +250,14 @@
             // Remove explosion element after animation ends
             setTimeout(() => {
                 explosion.remove();
-            }, 1000);  // Match the duration of the animation
+            }, 1000);
 
             if (depth < 2) {
                 setTimeout(() => {
                     for (let i = 0; i < 4; i++) {
                         this.createExplosion(x + (Math.random() * 100 - 50), y + (Math.random() * 100 - 50), depth + 1);
                     }
-                }, 500);  // Delay slightly for visual effect
+                }, 500);
             } else {
                 this.createFireworkAnimation(x, y, depth + 1);
             }
@@ -331,11 +374,10 @@
 
             setTimeout(() => {
                 canvas.remove();
-                // Create another firework in the same place after the current one is cleaned up
-                if (depth < 1) {
-                    this.createFireworkAnimation(x, y, depth + 1);
+                if (depth < 2) {
+                    this.createFireworkAnimation(x, y, depth + 2);
                 }
-            }, 2000);  // Remove canvas after 2 seconds
+            }, 2000);
         }
     }
 
